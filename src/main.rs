@@ -65,11 +65,12 @@ mod config {
     }
 }
 mod args {
+    use std::path::PathBuf;
     use clap::Parser;
 
     #[derive(Debug, Parser)]
     pub struct SynthText {
-        pub api_key: Option<String>,
+        pub config: Option<PathBuf>,
 
         #[clap(subcommand)]
         pub action: SynthTextAction,
