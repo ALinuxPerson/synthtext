@@ -213,10 +213,13 @@ mod args {
     }
 }
 mod textsynth {
-    use once_cell::sync::OnceCell;
+    use once_cell::sync::{Lazy, OnceCell};
     use textsynth::core::TextSynth;
+    use textsynth::engine::Engine;
+    use crate::config;
 
     static TEXT_SYNTH: OnceCell<TextSynth> = OnceCell::new();
+    static ENGINE: Lazy<Engine> = Lazy::new(|| get().engine(config::get().engine_definition.clone()));
 
     pub fn initialize(api_key: String) -> &'static TextSynth {
         TEXT_SYNTH.get_or_init(|| TextSynth::new(api_key))
@@ -224,6 +227,10 @@ mod textsynth {
 
     pub fn get() -> &'static TextSynth {
         TEXT_SYNTH.get().expect("textsynth not initialized")
+    }
+
+    pub fn engine() -> &'static Engine<'static> {
+        &ENGINE
     }
 }
 mod app {
