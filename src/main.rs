@@ -189,7 +189,7 @@ mod args {
             top_k: Option<TopKFromStrAdapter>,
 
             #[clap(short = 'p', long)]
-            top_p: Option<TopKFromStrAdapter>,
+            top_p: Option<TopPFromStrAdapter>,
 
             #[clap(subcommand)]
             method: SynthTextTextCompletionMethod,
@@ -287,7 +287,7 @@ fn main() {
             SynthTextAction::LogProbabilities {
                 context,
                 continuation,
-            } => todo!(),
+            } => app::log_probabilities(context, continuation),
             SynthTextAction::TextCompletion {
                 prompt,
                 max_tokens,
@@ -295,10 +295,8 @@ fn main() {
                 top_k,
                 top_p,
                 method,
-            } => todo!(),
+            } => app::text_completion(prompt, max_tokens, temperature, top_k, top_p, method),
         }
-
-        Ok(())
     }
 
     let exit_code = match inner() {
