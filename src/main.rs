@@ -2,6 +2,7 @@ use std::process;
 
 mod config {
     use std::fs;
+    use std::path::Path;
     use anyhow::Context;
     use serde::{Deserialize, Serialize};
     use tap::Pipe;
@@ -51,7 +52,10 @@ mod config {
 
     impl Config {
         pub fn load() -> anyhow::Result<Self> {
-            let location = paths::location();
+            Self::load_with_location(paths::location())
+        }
+
+        pub fn load_with_location(location: &Path) -> anyhow::Result<Self> {
             location.pipe(fs::read_to_string)
                 .with_context(|| format!("failed to read path '{}'", location.display()))?
                 .pipe_ref(|contents| serde_json::from_str(contents))
