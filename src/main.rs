@@ -227,6 +227,8 @@ mod textsynth {
     }
 }
 
+use args::*;
+
 fn main() {
     fn inner() -> anyhow::Result<()> {
         let args = args::parse();
@@ -237,6 +239,22 @@ fn main() {
                 .context("failed to initialize the config with the default location")?,
         };
         textsynth::initialize(config.api_key.clone());
+
+
+        match args.action {
+            SynthTextAction::LogProbabilities {
+                context,
+                continuation,
+            } => todo!(),
+            SynthTextAction::TextCompletion {
+                prompt,
+                max_tokens,
+                temperature,
+                top_k,
+                top_p,
+                method,
+            } => todo!(),
+        }
 
         Ok(())
     }
