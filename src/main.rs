@@ -96,10 +96,12 @@ mod config {
     }
 
     pub fn initialize() -> anyhow::Result<&'static Config> {
+        paths::initialize()?;
         Config::initialize()
     }
 
     pub fn initialize_with_location(location: &Path) -> anyhow::Result<&'static Config> {
+        paths::initialize()?;
         Config::initialize_with_location(location)
     }
 
