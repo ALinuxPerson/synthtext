@@ -75,7 +75,11 @@ mod config {
 }
 mod args {
     use std::path::PathBuf;
+    use std::str::FromStr;
+    use anyhow::Context;
     use clap::Parser;
+    use tap::Pipe;
+    use textsynth::prelude::{NonEmptyString, Stop, TopK, TopP};
 
     #[derive(Debug, Parser)]
     pub struct SynthText {
@@ -86,8 +90,71 @@ mod args {
         pub action: SynthTextAction,
     }
 
+    #[derive(Debug)]
+    pub struct NonEmptyStringFromStrAdapter(pub NonEmptyString);
+
+    impl FromStr for NonEmptyStringFromStrAdapter {
+        type Err = anyhow::Error;
+
+        fn from_str(s: &str) -> Result<Self, Self::Err> {
+            NonEmptyString::new(s.into()).context("given string was empty").map(Self)
+        }
+    }
+
+    #[derive(Debug)]
+    pub struct TopKFromStrAdapter(pub TopK);
+
+    impl FromStr for TopKFromStrAdapter {
+        type Err = anyhow::Error;
+
+        fn from_str(s: &str) -> Result<Self, Self::Err> {
+            s.parse::<u16>()
+                .with_context(|| format!("the given string '{s}' wasn't a valid number"))?
+                .pipe(TopK::new)
+                .with_context(|| format!("the number {s} wasn't in the required bound of 0..=1000"))
+                .map(Self)
+        }
+    }
+
+    #[derive(Debug)]
+    pub struct TopPFromStrAdapter(pub TopP);
+
+    impl FromStr for TopPFromStrAdapter {
+        type Err = anyhow::Error;
+
+        fn from_str(s: &str) -> Result<Self, Self::Err> {
+            s.parse::<f64>()
+                .with_context(|| format!("the given string '{s}' wasn't a valid float"))?
+                .pipe(TopP::new)
+                .with_context(|| format!("the number {s} wasn't in the required bound of 0.0..=1.0"))
+                .map(Self)
+        }
+    }
+
     #[derive(Debug, Parser)]
     pub enum SynthTextAction {
+        LogProbabilities {
+            context: String,
+            continuation: NonEmptyStringFromStrAdapter,
+        },
+        TextCompletion {
+            prompt: String,
+            max_tokens: Option<usize>,
+            temperature: Option<f64>,
+            top_k: Option<TopKFromStrAdapter>,
+            top_p: Option<TopKFromStrAdapter>,
+
+            #[clap(subcommand)]
+            method: SynthTextTextCompletionMethod,
+        }
+    }
+
+    #[derive(Debug, Parser)]
+    pub enum SynthTextTextCompletionMethod {
+        Now,
+        Stream {
+            until: Vec<String>,
+        }
     }
 }
 
