@@ -36,27 +36,6 @@ mod config {
             API_KEY.get_or_init(|| directory().join("api_key"))
         }
     }
-    mod api_key {
-        use anyhow::Context;
-        use once_cell::sync::OnceCell;
-        use crate::config::paths;
-
-        static API_KEY: OnceCell<String> = OnceCell::new();
-
-        pub fn initialize() -> anyhow::Result<()> {
-            if API_KEY.get().is_none() {
-                let api_key = std::fs::read_to_string(paths::api_key())
-                    .context("failed to read api key")?;
-                let _ = API_KEY.set(api_key);
-            }
-
-            Ok(())
-        }
-
-        pub fn get() -> &'static str {
-            API_KEY.get().expect("api key not initialized")
-        }
-    }
 }
 mod args {
     use clap::Parser;
