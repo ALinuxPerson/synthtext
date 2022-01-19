@@ -1,7 +1,10 @@
 use std::process;
 
 mod config {
+    use std::fs;
+    use anyhow::Context;
     use serde::{Deserialize, Serialize};
+    use tap::Pipe;
     use textsynth::prelude::EngineDefinition;
 
     mod paths {
@@ -44,6 +47,16 @@ mod config {
     pub struct Config {
         pub api_key: String,
         pub engine_definition: EngineDefinition,
+    }
+
+    impl Config {
+        pub fn load() -> anyhow::Result<Self> {
+            let location = paths::location();
+            location.pipe(fs::read_to_string)
+                .with_context(|| format!("failed to read path '{}'", location.display()))?
+                .pipe_ref(|contents| serde_json::from_str(contents))
+                .with_context(|| format!("failed to parse contents of path '{}' to json", location.display()))
+        }
     }
 }
 mod args {

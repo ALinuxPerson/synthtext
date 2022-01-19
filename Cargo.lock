@@ -853,6 +853,8 @@ dependencies = [
  "directories",
  "once_cell",
  "serde",
+ "serde_json",
+ "tap",
  "textsynth",
 ]
 
