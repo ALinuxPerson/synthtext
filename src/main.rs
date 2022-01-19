@@ -48,9 +48,15 @@ mod config {
 
     static CONFIG: OnceCell<Config> = OnceCell::new();
 
+    const fn default_engine_definition() -> EngineDefinition {
+        EngineDefinition::GptJ6B
+    }
+
     #[derive(Serialize, Deserialize)]
     pub struct Config {
         pub api_key: String,
+
+        #[serde(default = "default_engine_definition")]
         pub engine_definition: EngineDefinition,
     }
 
