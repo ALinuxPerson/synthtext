@@ -167,10 +167,13 @@ mod args {
 
     #[derive(Debug, Parser)]
     pub enum SynthTextAction {
+        #[clap(visible_aliases = &["lp", "l"])]
         LogProbabilities {
             context: String,
             continuation: NonEmptyStringFromStrAdapter,
         },
+
+        #[clap(visible_aliases = &["tc", "t"])]
         TextCompletion {
             prompt: String,
 
@@ -193,7 +196,10 @@ mod args {
 
     #[derive(Debug, Parser)]
     pub enum SynthTextTextCompletionMethod {
+        #[clap(visible_alias = "n")]
         Now,
+
+        #[clap(visible_alias = "s")]
         Stream {
             until: Vec<String>,
         }
