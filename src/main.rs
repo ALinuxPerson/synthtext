@@ -226,6 +226,49 @@ mod textsynth {
         TEXT_SYNTH.get().expect("textsynth not initialized")
     }
 }
+mod app {
+    mod text_completion {
+        use crate::{TopKFromStrAdapter, TopPFromStrAdapter};
+
+        pub fn now(
+            prompt: String,
+            max_tokens: Option<usize>,
+            temperature: Option<f64>,
+            top_k: Option<TopKFromStrAdapter>,
+            top_p: Option<TopPFromStrAdapter>,
+        ) -> anyhow::Result<()> {
+            Ok(())
+        }
+
+        pub fn stream(
+            prompt: String,
+            max_tokens: Option<usize>,
+            temperature: Option<f64>,
+            top_k: Option<TopKFromStrAdapter>,
+            top_p: Option<TopPFromStrAdapter>,
+            stop: Option<Vec<String>>,
+        ) -> anyhow::Result<()> {
+            Ok(())
+        }
+    }
+
+    use crate::{NonEmptyStringFromStrAdapter, SynthTextTextCompletionMethod, TopKFromStrAdapter, TopPFromStrAdapter};
+
+    pub fn log_probabilities(context: String, continuation: NonEmptyStringFromStrAdapter) -> anyhow::Result<()> {
+        Ok(())
+    }
+
+    pub fn text_completion(
+        prompt: String,
+        max_tokens: Option<usize>,
+        temperature: Option<f64>,
+        top_k: Option<TopKFromStrAdapter>,
+        top_p: Option<TopPFromStrAdapter>,
+        method: SynthTextTextCompletionMethod,
+    ) -> anyhow::Result<()> {
+        Ok(())
+    }
+}
 
 use args::*;
 
@@ -239,7 +282,6 @@ fn main() {
                 .context("failed to initialize the config with the default location")?,
         };
         textsynth::initialize(config.api_key.clone());
-
 
         match args.action {
             SynthTextAction::LogProbabilities {
