@@ -156,6 +156,10 @@ mod args {
             until: Vec<String>,
         }
     }
+
+    pub fn parse() -> SynthText {
+        SynthText::parse()
+    }
 }
 
 fn main() {
