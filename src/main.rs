@@ -237,7 +237,7 @@ mod app {
     mod text_completion {
         use crate::{TopKFromStrAdapter, TopPFromStrAdapter};
 
-        pub fn now(
+        pub async fn now(
             prompt: String,
             max_tokens: Option<usize>,
             temperature: Option<f64>,
@@ -247,7 +247,7 @@ mod app {
             Ok(())
         }
 
-        pub fn stream(
+        pub async fn stream(
             prompt: String,
             max_tokens: Option<usize>,
             temperature: Option<f64>,
@@ -261,11 +261,11 @@ mod app {
 
     use crate::{NonEmptyStringFromStrAdapter, SynthTextTextCompletionMethod, TopKFromStrAdapter, TopPFromStrAdapter};
 
-    pub fn log_probabilities(context: String, continuation: NonEmptyStringFromStrAdapter) -> anyhow::Result<()> {
+    pub async fn log_probabilities(context: String, continuation: NonEmptyStringFromStrAdapter) -> anyhow::Result<()> {
         Ok(())
     }
 
-    pub fn text_completion(
+    pub async fn text_completion(
         prompt: String,
         max_tokens: Option<usize>,
         temperature: Option<f64>,
@@ -280,7 +280,7 @@ mod app {
                 temperature,
                 top_k,
                 top_p,
-            ),
+            ).await,
             SynthTextTextCompletionMethod::Stream { until } => text_completion::stream(
                 prompt,
                 max_tokens,
@@ -288,7 +288,7 @@ mod app {
                 top_k,
                 top_p,
                 until,
-            ),
+            ).await,
         }
     }
 }
@@ -311,7 +311,7 @@ async fn main() {
             SynthTextAction::LogProbabilities {
                 context,
                 continuation,
-            } => app::log_probabilities(context, continuation),
+            } => app::log_probabilities(context, continuation).await,
             SynthTextAction::TextCompletion {
                 prompt,
                 max_tokens,
@@ -319,11 +319,11 @@ async fn main() {
                 top_k,
                 top_p,
                 method,
-            } => app::text_completion(prompt, max_tokens, temperature, top_k, top_p, method),
+            } => app::text_completion(prompt, max_tokens, temperature, top_k, top_p, method).await,
         }
     }
 
-    let exit_code = match inner() {
+    let exit_code = match inner().await {
         Ok(_) => 0,
         Err(err) => {
             eprintln!("error: {:#}", err);
