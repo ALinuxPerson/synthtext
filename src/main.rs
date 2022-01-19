@@ -67,6 +67,11 @@ mod config {
         paths::initialize()?;
         Config::load()
     }
+
+    pub fn load_with_location(location: &Path) -> anyhow::Result<Config> {
+        paths::initialize()?;
+        Config::load_with_location(location)
+    }
 }
 mod args {
     use std::path::PathBuf;
