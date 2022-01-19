@@ -1,3 +1,5 @@
+use std::process;
+
 mod config {
     mod paths {
         use std::path::{Path, PathBuf};
@@ -58,5 +60,15 @@ mod config {
 }
 
 fn main() {
-    println!("Hello, world!");
+    fn inner() -> anyhow::Result<()> { Ok(()) }
+
+    let exit_code = match inner() {
+        Ok(_) => 0,
+        Err(err) => {
+            eprintln!("error: {:#}", err);
+            1
+        }
+    };
+
+    process::exit(exit_code)
 }
