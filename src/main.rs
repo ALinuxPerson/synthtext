@@ -203,6 +203,7 @@ mod args {
 
         #[clap(visible_alias = "s")]
         Stream {
+            #[clap(short, long)]
             until: Vec<String>,
         }
     }
