@@ -246,7 +246,7 @@ mod app {
             temperature: Option<f64>,
             top_k: Option<TopKFromStrAdapter>,
             top_p: Option<TopPFromStrAdapter>,
-            stop: Option<Vec<String>>,
+            until: Vec<String>,
         ) -> anyhow::Result<()> {
             Ok(())
         }
@@ -266,7 +266,23 @@ mod app {
         top_p: Option<TopPFromStrAdapter>,
         method: SynthTextTextCompletionMethod,
     ) -> anyhow::Result<()> {
-        Ok(())
+        match method {
+            SynthTextTextCompletionMethod::Now => text_completion::now(
+                prompt,
+                max_tokens,
+                temperature,
+                top_k,
+                top_p,
+            ),
+            SynthTextTextCompletionMethod::Stream { until } => text_completion::stream(
+                prompt,
+                max_tokens,
+                temperature,
+                top_k,
+                top_p,
+                until,
+            ),
+        }
     }
 }
 
