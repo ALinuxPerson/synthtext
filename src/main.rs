@@ -58,6 +58,22 @@ mod config {
         }
     }
 }
+mod args {
+    use clap::Parser;
+
+    #[derive(Debug, Parser)]
+    pub struct SynthText {
+        pub api_key: Option<String>,
+
+        #[clap(subcommand)]
+        pub action: SynthTextAction,
+    }
+
+    #[derive(Debug, Parser)]
+    pub enum SynthTextAction {
+
+    }
+}
 
 fn main() {
     fn inner() -> anyhow::Result<()> { Ok(()) }
