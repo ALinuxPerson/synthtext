@@ -209,6 +209,20 @@ mod args {
         SynthText::parse()
     }
 }
+mod textsynth {
+    use once_cell::sync::OnceCell;
+    use textsynth::core::TextSynth;
+
+    static TEXT_SYNTH: OnceCell<TextSynth> = OnceCell::new();
+
+    pub fn initialize(api_key: String) -> &'static TextSynth {
+        TEXT_SYNTH.get_or_init(|| TextSynth::new(api_key))
+    }
+
+    pub fn get() -> &'static TextSynth {
+        TEXT_SYNTH.get().expect("textsynth not initialized")
+    }
+}
 
 fn main() {
     fn inner() -> anyhow::Result<()> {
