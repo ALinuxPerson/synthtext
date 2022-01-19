@@ -58,6 +58,11 @@ mod config {
                 .with_context(|| format!("failed to parse contents of path '{}' to json", location.display()))
         }
     }
+
+    pub fn load() -> anyhow::Result<Config> {
+        paths::initialize()?;
+        Config::load()
+    }
 }
 mod args {
     use clap::Parser;
