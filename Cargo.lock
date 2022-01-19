@@ -852,6 +852,7 @@ dependencies = [
  "clap",
  "directories",
  "once_cell",
+ "serde",
  "textsynth",
 ]
 
@@ -887,7 +888,7 @@ dependencies = [
 [[package]]
 name = "textsynth"
 version = "0.1.0"
-source = "git+https://github.com/ALinuxPerson/textsynth.git#a749dd7afb3af9ee11c17c0d72a0ef12a444389a"
+source = "git+https://github.com/ALinuxPerson/textsynth.git#fd8eae2d91752e5a5473940c16dccc1d2195eb41"
 dependencies = [
  "arrayvec",
  "bounded-integer",

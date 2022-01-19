@@ -1,6 +1,9 @@
 use std::process;
 
 mod config {
+    use serde::{Deserialize, Serialize};
+    use textsynth::prelude::EngineDefinition;
+
     mod paths {
         use std::path::{Path, PathBuf};
         use anyhow::Context;
@@ -35,6 +38,12 @@ mod config {
         pub fn api_key() -> &'static Path {
             API_KEY.get_or_init(|| directory().join("api_key"))
         }
+    }
+
+    #[derive(Serialize, Deserialize)]
+    pub struct Config {
+        pub api_key: String,
+        pub engine_definition: EngineDefinition,
     }
 }
 mod args {
