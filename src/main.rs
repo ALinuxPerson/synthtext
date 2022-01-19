@@ -15,7 +15,7 @@ mod config {
         const APPLICATION: &str = "synthtext";
         static PROJECT_DIRS: OnceCell<ProjectDirs> = OnceCell::new();
         static DIRECTORY: OnceCell<&Path> = OnceCell::new();
-        static API_KEY: OnceCell<PathBuf> = OnceCell::new();
+        static LOCATION: OnceCell<PathBuf> = OnceCell::new();
 
         pub fn initialize() -> anyhow::Result<()> {
             if PROJECT_DIRS.get().is_none() {
@@ -35,8 +35,8 @@ mod config {
             DIRECTORY.get_or_init(|| project_dirs().config_dir())
         }
 
-        pub fn api_key() -> &'static Path {
-            API_KEY.get_or_init(|| directory().join("api_key"))
+        pub fn location() -> &'static Path {
+            LOCATION.get_or_init(|| directory().join("config.json"))
         }
     }
 
