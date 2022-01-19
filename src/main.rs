@@ -233,6 +233,7 @@ fn main() {
             None => config::initialize()
                 .context("failed to initialize the config with the default location")?,
         };
+        textsynth::initialize(config.api_key.clone());
 
         Ok(())
     }
