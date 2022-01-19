@@ -14,14 +14,14 @@ mod config {
         use std::path::{Path, PathBuf};
         use anyhow::Context;
         use directories::ProjectDirs;
-        use once_cell::sync::OnceCell;
+        use once_cell::sync::{Lazy, OnceCell};
 
         const QUALIFIER: &str = "com";
         const ORGANIZATION: &str = "ALinuxPerson";
         const APPLICATION: &str = "synthtext";
         static PROJECT_DIRS: OnceCell<ProjectDirs> = OnceCell::new();
-        static DIRECTORY: OnceCell<&Path> = OnceCell::new();
-        static LOCATION: OnceCell<PathBuf> = OnceCell::new();
+        static DIRECTORY: Lazy<&Path> = Lazy::new(|| project_dirs().config_dir());
+        static LOCATION: Lazy<PathBuf> = Lazy::new(|| directory().join("config.json"));
 
         pub fn initialize() -> anyhow::Result<()> {
             if PROJECT_DIRS.get().is_none() {
@@ -38,11 +38,11 @@ mod config {
         }
 
         pub fn directory() -> &'static Path {
-            DIRECTORY.get_or_init(|| project_dirs().config_dir())
+            &DIRECTORY
         }
 
         pub fn location() -> &'static Path {
-            LOCATION.get_or_init(|| directory().join("config.json"))
+            &LOCATION
         }
     }
 
