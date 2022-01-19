@@ -139,9 +139,17 @@ mod args {
         },
         TextCompletion {
             prompt: String,
+
+            #[clap(short, long)]
             max_tokens: Option<usize>,
+
+            #[clap(short, long)]
             temperature: Option<f64>,
+
+            #[clap(short = 'k', long)]
             top_k: Option<TopKFromStrAdapter>,
+
+            #[clap(short = 'p', long)]
             top_p: Option<TopKFromStrAdapter>,
 
             #[clap(subcommand)]
@@ -163,7 +171,11 @@ mod args {
 }
 
 fn main() {
-    fn inner() -> anyhow::Result<()> { Ok(()) }
+    fn inner() -> anyhow::Result<()> {
+        let args = args::parse();
+
+        Ok(())
+    }
 
     let exit_code = match inner() {
         Ok(_) => 0,
