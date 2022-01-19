@@ -295,8 +295,9 @@ mod app {
 
 use args::*;
 
-fn main() {
-    fn inner() -> anyhow::Result<()> {
+#[tokio::main]
+async fn main() {
+    async fn inner() -> anyhow::Result<()> {
         let args = args::parse();
         let config = match args.config {
             Some(config_path) => config::initialize_with_location(&config_path)
