@@ -1,9 +1,11 @@
 use std::process;
+use anyhow::Context;
 
 mod config {
     use std::fs;
     use std::path::Path;
     use anyhow::Context;
+    use once_cell::sync::OnceCell;
     use serde::{Deserialize, Serialize};
     use tap::Pipe;
     use textsynth::prelude::EngineDefinition;
@@ -44,6 +46,8 @@ mod config {
         }
     }
 
+    static CONFIG: OnceCell<Config> = OnceCell::new();
+
     #[derive(Serialize, Deserialize)]
     pub struct Config {
         pub api_key: String,
@@ -51,6 +55,14 @@ mod config {
     }
 
     impl Config {
+        pub fn initialize() -> anyhow::Result<&'static Self> {
+            CONFIG.get_or_try_init(Self::load)
+        }
+
+        pub fn initialize_with_location(location: &Path) -> anyhow::Result<&'static Self> {
+            CONFIG.get_or_try_init(|| Self::load_with_location(location))
+        }
+
         pub fn load() -> anyhow::Result<Self> {
             Self::load_with_location(paths::location())
         }
@@ -60,6 +72,10 @@ mod config {
                 .with_context(|| format!("failed to read path '{}'", location.display()))?
                 .pipe_ref(|contents| serde_json::from_str(contents))
                 .with_context(|| format!("failed to parse contents of path '{}' to json", location.display()))
+        }
+
+        pub fn get() -> &'static Self {
+            CONFIG.get().expect("config not initialized")
         }
     }
 
@@ -71,6 +87,18 @@ mod config {
     pub fn load_with_location(location: &Path) -> anyhow::Result<Config> {
         paths::initialize()?;
         Config::load_with_location(location)
+    }
+
+    pub fn initialize() -> anyhow::Result<&'static Config> {
+        Config::initialize()
+    }
+
+    pub fn initialize_with_location(location: &Path) -> anyhow::Result<&'static Config> {
+        Config::initialize_with_location(location)
+    }
+
+    pub fn get() -> &'static Config {
+        Config::get()
     }
 }
 mod args {
@@ -173,6 +201,12 @@ mod args {
 fn main() {
     fn inner() -> anyhow::Result<()> {
         let args = args::parse();
+        let config = match args.config {
+            Some(config_path) => config::initialize_with_location(&config_path)
+                .with_context(|| format!("failed to initialize the config with the specified location '{}'", config_path.display()))?,
+            None => config::initialize()
+                .context("failed to initialize the config with the default location")?,
+        };
 
         Ok(())
     }
