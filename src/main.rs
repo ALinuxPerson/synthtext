@@ -79,6 +79,7 @@ mod args {
 
     #[derive(Debug, Parser)]
     pub struct SynthText {
+        #[clap(short, long)]
         pub config: Option<PathBuf>,
 
         #[clap(subcommand)]
@@ -87,7 +88,6 @@ mod args {
 
     #[derive(Debug, Parser)]
     pub enum SynthTextAction {
-
     }
 }
 
