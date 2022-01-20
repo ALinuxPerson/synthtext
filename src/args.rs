@@ -105,7 +105,11 @@ pub enum SynthTextAction {
         /// How to run this text completion.
         #[clap(subcommand)]
         method: SynthTextTextCompletionMethod,
-    }
+    },
+
+    /// Find the configuration file, regardless of whether it exists or not.
+    #[clap(visible_aliases = &["fcp", "f"])]
+    FindConfigPath,
 }
 
 #[derive(Debug, Parser)]

@@ -1,4 +1,4 @@
-mod paths;
+pub mod paths;
 
 use std::fs;
 use std::path::Path;
