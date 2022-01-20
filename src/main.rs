@@ -235,7 +235,40 @@ mod textsynth {
 }
 mod app {
     mod text_completion {
+        use std::ops::DerefMut;
+        use std::pin::Pin;
+        use std::{io, task};
+        use std::io::Write;
+        use std::task::Poll;
+        use anyhow::Context;
+        use futures::{Stream, StreamExt};
+        use tap::{Pipe, Tap, TryConv};
+        use textsynth::prelude::{MaxTokens, Stop, TextCompletionBuilder, TextCompletionStreamResult};
         use crate::{TopKFromStrAdapter, TopPFromStrAdapter};
+
+        fn common(
+            prompt: String,
+            max_tokens: Option<usize>,
+            temperature: Option<f64>,
+            top_k: Option<TopKFromStrAdapter>,
+            top_p: Option<TopPFromStrAdapter>,
+        ) -> anyhow::Result<TextCompletionBuilder<'static, 'static>> {
+            let engine = crate::textsynth::engine();
+            let max_tokens: Option<MaxTokens> = match max_tokens {
+                Some(max_tokens) => MaxTokens::new(max_tokens, &engine.definition)
+                    .with_context(|| format!("the maximum number of tokens given, {max_tokens}, is not enough to fit in the engine definition (maximum supported for current engine definition is {})", engine.definition.max_tokens()))?
+                    .pipe(Some),
+                None => None,
+            };
+            let top_k = top_k.map(|top_k| top_k.0);
+            let top_p = top_p.map(|top_p| top_p.0);
+            engine.text_completion(prompt)
+                .tap_mut(|this| this.max_tokens = max_tokens)
+                .tap_mut(|this| this.temperature = temperature)
+                .tap_mut(|this| this.top_k = top_k)
+                .tap_mut(|this| this.top_p = top_p)
+                .pipe(Ok)
+        }
 
         pub async fn now(
             prompt: String,
@@ -244,7 +277,46 @@ mod app {
             top_k: Option<TopKFromStrAdapter>,
             top_p: Option<TopPFromStrAdapter>,
         ) -> anyhow::Result<()> {
+            print!("{}", prompt);
+            let text_completion = common(prompt, max_tokens, temperature, top_k, top_p)?
+                .now()
+                .await
+                .context("failed to connect to the textsynth api")?
+                .context("failed to generate a text completion now")?;
+
+            println!("{}", text_completion.text());
+
             Ok(())
+        }
+
+        enum DynStream<T, U>
+        where
+            T: Stream<Item = TextCompletionStreamResult>,
+            U: Stream<Item = TextCompletionStreamResult>,
+        {
+            Left(T),
+            Right(U),
+        }
+
+        impl<T, U> Stream for DynStream<T, U>
+            where
+                T: Stream<Item = TextCompletionStreamResult> + Unpin,
+                U: Stream<Item = TextCompletionStreamResult> + Unpin,
+        {
+            type Item = TextCompletionStreamResult;
+
+            fn poll_next(mut self: Pin<&mut Self>, cx: &mut task::Context<'_>) -> Poll<Option<Self::Item>> {
+                match self.deref_mut() {
+                    Self::Left(left) => {
+                        futures::pin_mut!(left);
+                        left.poll_next(cx)
+                    },
+                    Self::Right(right) => {
+                        futures::pin_mut!(right);
+                        right.poll_next(cx)
+                    },
+                }
+            }
         }
 
         pub async fn stream(
@@ -255,6 +327,39 @@ mod app {
             top_p: Option<TopPFromStrAdapter>,
             until: Vec<String>,
         ) -> anyhow::Result<()> {
+            let until = if until.is_empty() {
+                None
+            } else {
+                until.as_slice()
+                    .try_conv::<Stop>()
+                    .with_context(|| format!("passed overflowing 'until' argument; expected <= 5 items but got {}", until.len()))
+                    .map(Some)?
+            };
+            let builder = common(prompt.clone(), max_tokens, temperature, top_k, top_p)?;
+            let mut stream = match until {
+                Some(until) => DynStream::Left(builder.stream_until(until)
+                    .await
+                    .context("failed to connect to the textsynth api")?),
+                None => DynStream::Right(builder.stream()
+                    .await
+                    .context("failed to connect to the textsynth api")?),
+            };
+            let mut stdout = io::stdout();
+            print!("{}", prompt);
+            stdout.flush().context("failed to flush stdout")?;
+
+            while let Some(text_completion) = stream.next().await {
+                let text_completion = text_completion
+                    .context("failed to connect to textsynth api")?
+                    .context("failed to parse output from textsynth api to json")?
+                    .context("failed to get next text completion")?;
+
+                print!("{}", text_completion.text());
+                stdout.flush().context("failed to flush stdout")?;
+            }
+
+            println!();
+
             Ok(())
         }
     }
