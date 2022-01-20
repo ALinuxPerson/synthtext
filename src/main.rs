@@ -286,11 +286,17 @@ mod app {
                     .with_context(|| format!("passed overflowing 'until' argument; expected <= 5 items but got {}", until.len()))
                     .map(Some)?
             };
-            let text_completion = common(prompt.clone(), max_tokens, temperature, top_k, top_p)?
-                .now()
-                .await
-                .context("failed to connect to the textsynth api")?
-                .context("failed to generate a text completion now")?;
+            let builder = common(prompt.clone(), max_tokens, temperature, top_k, top_p)?;
+            let text_completion = match until {
+                Some(until) => builder.now_until(until)
+                    .await
+                    .context("failed to connect to the textsynth api")?
+                    .context("failed to generate a text completion now")?,
+                None => builder.now()
+                    .await
+                    .context("failed to connect to the textsynth api")?
+                    .context("failed to generate a text completion now")?,
+            };
             print!("{}", prompt);
 
             println!("{}", text_completion.text());
