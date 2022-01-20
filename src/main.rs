@@ -304,36 +304,6 @@ mod app {
             Ok(())
         }
 
-        enum DynStream<T, U>
-        where
-            T: Stream<Item = TextCompletionStreamResult>,
-            U: Stream<Item = TextCompletionStreamResult>,
-        {
-            Left(T),
-            Right(U),
-        }
-
-        impl<T, U> Stream for DynStream<T, U>
-            where
-                T: Stream<Item = TextCompletionStreamResult> + Unpin,
-                U: Stream<Item = TextCompletionStreamResult> + Unpin,
-        {
-            type Item = TextCompletionStreamResult;
-
-            fn poll_next(mut self: Pin<&mut Self>, cx: &mut task::Context<'_>) -> Poll<Option<Self::Item>> {
-                match self.deref_mut() {
-                    Self::Left(left) => {
-                        futures::pin_mut!(left);
-                        left.poll_next(cx)
-                    },
-                    Self::Right(right) => {
-                        futures::pin_mut!(right);
-                        right.poll_next(cx)
-                    },
-                }
-            }
-        }
-
         pub async fn stream(
             prompt: String,
             max_tokens: Option<usize>,
@@ -341,16 +311,10 @@ mod app {
             top_k: Option<TopKFromStrAdapter>,
             top_p: Option<TopPFromStrAdapter>,
         ) -> anyhow::Result<()> {
-
-            let builder = common(prompt.clone(), max_tokens, temperature, top_k, top_p)?;
-            let mut stream = match until {
-                Some(until) => DynStream::Left(builder.stream_until(until)
-                    .await
-                    .context("failed to connect to the textsynth api")?),
-                None => DynStream::Right(builder.stream()
-                    .await
-                    .context("failed to connect to the textsynth api")?),
-            };
+            let mut stream = common(prompt.clone(), max_tokens, temperature, top_k, top_p)?
+                .stream()
+                .await
+                .context("failed to connect to the textsynth api")?;
             let mut stdout = io::stdout();
             print!("{}", prompt);
             stdout.flush().context("failed to flush stdout")?;
