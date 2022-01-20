@@ -878,6 +878,7 @@ dependencies = [
  "directories",
  "futures",
  "once_cell",
+ "owo-colors",
  "serde",
  "serde_json",
  "tap",
