@@ -276,6 +276,7 @@ mod app {
             temperature: Option<f64>,
             top_k: Option<TopKFromStrAdapter>,
             top_p: Option<TopPFromStrAdapter>,
+            until: Vec<String>,
         ) -> anyhow::Result<()> {
             print!("{}", prompt);
             let text_completion = common(prompt, max_tokens, temperature, top_k, top_p)?
@@ -325,7 +326,6 @@ mod app {
             temperature: Option<f64>,
             top_k: Option<TopKFromStrAdapter>,
             top_p: Option<TopPFromStrAdapter>,
-            until: Vec<String>,
         ) -> anyhow::Result<()> {
             let until = if until.is_empty() {
                 None
@@ -379,20 +379,20 @@ mod app {
         method: SynthTextTextCompletionMethod,
     ) -> anyhow::Result<()> {
         match method {
-            SynthTextTextCompletionMethod::Now => text_completion::now(
-                prompt,
-                max_tokens,
-                temperature,
-                top_k,
-                top_p,
-            ).await,
-            SynthTextTextCompletionMethod::Stream { until } => text_completion::stream(
+            SynthTextTextCompletionMethod::Now { until } => text_completion::now(
                 prompt,
                 max_tokens,
                 temperature,
                 top_k,
                 top_p,
                 until,
+            ).await,
+            SynthTextTextCompletionMethod::Stream => text_completion::stream(
+                prompt,
+                max_tokens,
+                temperature,
+                top_k,
+                top_p,
             ).await,
         }
     }
