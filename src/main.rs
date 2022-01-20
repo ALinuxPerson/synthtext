@@ -245,6 +245,7 @@ mod app {
         use tap::{Pipe, Tap, TryConv};
         use textsynth::prelude::{MaxTokens, Stop, TextCompletionBuilder, TextCompletionStreamResult};
         use crate::{TopKFromStrAdapter, TopPFromStrAdapter};
+        use owo_colors::OwoColorize;
 
         fn common(
             prompt: String,
@@ -304,6 +305,10 @@ mod app {
             if text_completion.truncated_prompt() {
                 alp::warn!("prompt was truncated; the prompt was too large compared to the engine definition's maximum context length");
                 alp::tip!("try shortening your prompt to fit in the engine definition's maximum context length");
+            }
+
+            if let Some(total_tokens) = text_completion.total_tokens() {
+                alp::info!("total tokens used: {}", total_tokens.bold());
             }
 
             Ok(())
