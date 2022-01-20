@@ -199,13 +199,13 @@ mod args {
     #[derive(Debug, Parser)]
     pub enum SynthTextTextCompletionMethod {
         #[clap(visible_alias = "n")]
-        Now,
-
-        #[clap(visible_alias = "s")]
-        Stream {
+        Now {
             #[clap(short, long)]
             until: Vec<String>,
-        }
+        },
+
+        #[clap(visible_alias = "s")]
+        Stream,
     }
 
     pub fn parse() -> SynthText {
