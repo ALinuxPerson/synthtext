@@ -213,6 +213,7 @@ mod args {
     }
 }
 mod textsynth {
+    use anyhow::Context;
     use once_cell::sync::{Lazy, OnceCell};
     use textsynth::core::TextSynth;
     use textsynth::engine::Engine;
@@ -221,8 +222,9 @@ mod textsynth {
     static TEXT_SYNTH: OnceCell<TextSynth> = OnceCell::new();
     static ENGINE: Lazy<Engine> = Lazy::new(|| get().engine(config::get().engine_definition.clone()));
 
-    pub fn initialize(api_key: String) -> &'static TextSynth {
-        TEXT_SYNTH.get_or_init(|| TextSynth::new(api_key))
+    pub fn initialize(api_key: String) -> anyhow::Result<&'static TextSynth> {
+        TEXT_SYNTH.get_or_try_init(|| TextSynth::try_new(api_key))
+            .context("failed to initialize the textsynth client")
     }
 
     pub fn get() -> &'static TextSynth {
@@ -406,7 +408,7 @@ async fn main() {
             None => config::initialize()
                 .context("failed to initialize the config with the default location")?,
         };
-        textsynth::initialize(config.api_key.clone());
+        textsynth::initialize(config.api_key.clone())?;
 
         match args.action {
             SynthTextAction::LogProbabilities {
