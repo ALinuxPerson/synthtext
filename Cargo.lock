@@ -3,6 +3,14 @@
 version = 3
 
 [[package]]
+name = "alp"
+version = "0.1.0"
+source = "git+https://github.com/ALinuxPerson/alp.git#b77767f46e3118f7679efea5016a9a0e8a5555b1"
+dependencies = [
+ "owo-colors",
+]
+
+[[package]]
 name = "anyhow"
 version = "1.0.52"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -609,6 +617,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "owo-colors"
+version = "3.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "20448fd678ec04e6ea15bbe0476874af65e98a01515d667aa49f1434dc44ebf4"
+
+[[package]]
 name = "percent-encoding"
 version = "2.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -858,6 +872,7 @@ dependencies = [
 name = "synthtext"
 version = "0.1.0"
 dependencies = [
+ "alp",
  "anyhow",
  "clap",
  "directories",
@@ -902,7 +917,7 @@ dependencies = [
 [[package]]
 name = "textsynth"
 version = "0.1.0"
-source = "git+https://github.com/ALinuxPerson/textsynth.git#341ae3b530c45a1da616b1a6753ac4428cef66cf"
+source = "git+https://github.com/ALinuxPerson/textsynth.git#5cd9c28fe478e417095cda9dcdd20bd850a351de"
 dependencies = [
  "arrayvec",
  "bounded-integer",

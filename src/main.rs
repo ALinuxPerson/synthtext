@@ -301,6 +301,11 @@ mod app {
 
             println!("{}", text_completion.text());
 
+            if text_completion.truncated_prompt() {
+                alp::warn!("prompt was truncated; the prompt was too large compared to the engine definition's maximum context length");
+                alp::tip!("try shortening your prompt to fit in the engine definition's maximum context length");
+            }
+
             Ok(())
         }
 
@@ -402,7 +407,7 @@ async fn main() {
     let exit_code = match inner().await {
         Ok(_) => 0,
         Err(err) => {
-            eprintln!("error: {:#}", err);
+            alp::error!("{:#}", err);
             1
         }
     };
