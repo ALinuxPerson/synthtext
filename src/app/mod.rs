@@ -21,7 +21,7 @@ pub mod config {
 
         match config_path_override {
             Some(config_path_override) => {
-                alp::info!("the config path would be located at {} {}", default_config_path.display().bold(), existing(default_config_path));
+                alp::info!("the config path {} be located at {} {}", "would".italic(), default_config_path.display().bold(), existing(default_config_path));
                 alp::info!("...but it was overridden to {} {}", config_path_override.display().bold(), existing(&config_path_override))
             },
             None => {
