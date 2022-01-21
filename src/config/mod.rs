@@ -3,7 +3,7 @@ pub mod paths;
 use anyhow::Context;
 use once_cell::sync::OnceCell;
 use serde::{Deserialize, Serialize};
-use std::fs;
+use std::{fs, io};
 use std::io::Write;
 use std::path::Path;
 use owo_colors::OwoColorize;
@@ -40,8 +40,16 @@ impl Config {
     }
 
     pub fn load_with_location(location: &Path) -> anyhow::Result<Self> {
-        location
-            .pipe(fs::read_to_string)
+        let result = fs::read_to_string(location);
+
+        if let Err(error) = &result {
+            if let io::ErrorKind::NotFound = error.kind() {
+                alp::tip!("generate the configuration file first");
+                alp::tip!("synthtext config generate --api-key {}", "<API KEY>".italic());
+            }
+        }
+
+        result
             .with_context(|| format!("failed to read path {}", location.display().bold()))?
             .pipe_ref(|contents| serde_json::from_str(contents))
             .with_context(|| {
