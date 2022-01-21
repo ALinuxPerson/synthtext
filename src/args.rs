@@ -134,10 +134,6 @@ pub enum SynthTextAction {
         method: SynthTextTextCompletionMethod,
     },
 
-    /// Find the configuration file, regardless of whether it exists or not.
-    #[clap(visible_aliases = &["fcp", "f"])]
-    FindConfigPath,
-
     /// Generate or find the current configuration.
     #[clap(subcommand)]
     Config(SynthTextConfig),
@@ -163,7 +159,7 @@ pub enum SynthTextTextCompletionMethod {
 #[derive(Debug, Parser)]
 #[clap(visible_alias = "c")]
 pub enum SynthTextConfig {
-    /// Find the path of the configuration file.
+    /// Find the path of the configuration file, regardless of whether it exists or not.
     #[clap(visible_aliases = &["fp", "f"])]
     FindPath,
 

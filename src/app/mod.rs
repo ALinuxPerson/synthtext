@@ -1,10 +1,29 @@
 mod text_completion;
 pub mod config {
-    use std::path::PathBuf;
+    use std::path::{Path, PathBuf};
+    use owo_colors::OwoColorize;
     use crate::EngineDefinitionFromStrAdapter;
 
-    pub fn find_path() -> anyhow::Result<()> {
-        todo!()
+    fn existing(path: &Path) -> String {
+        if path.exists() {
+            "(existing)".green().italic().to_string()
+        } else {
+            "(non-existing)".red().italic().to_string()
+        }
+    }
+
+    pub fn find_path(config_path_override: Option<PathBuf>) {
+        let default_config_path = crate::config::paths::location();
+
+        match config_path_override {
+            Some(config_path_override) => {
+                alp::info!("the config path would be located at {} {}", default_config_path.display().bold(), existing(default_config_path));
+                alp::info!("...but it was overridden to {} {}", config_path_override.display().bold(), existing(&config_path_override))
+            },
+            None => {
+                alp::info!("the config path is located at {} {}", default_config_path.display().bold(), existing(default_config_path))
+            }
+        }
     }
 
     pub fn generate(path: Option<PathBuf>, api_key: String, engine_definition: Option<EngineDefinitionFromStrAdapter>) -> anyhow::Result<()> {
@@ -58,27 +77,5 @@ pub async fn text_completion(
             top_k,
             top_p,
         ).await,
-    }
-}
-
-fn existing(path: &Path) -> String {
-    if path.exists() {
-        "(existing)".green().italic().to_string()
-    } else {
-        "(non-existing)".red().italic().to_string()
-    }
-}
-
-pub fn find_config_path(config_path_override: Option<PathBuf>) {
-    let default_config_path = crate::config::paths::location();
-
-    match config_path_override {
-        Some(config_path_override) => {
-            alp::info!("the config path would be located at {} {}", default_config_path.display().bold(), existing(default_config_path));
-            alp::info!("...but it was overridden to {} {}", config_path_override.display().bold(), existing(&config_path_override))
-        },
-        None => {
-            alp::info!("the config path is located at {} {}", default_config_path.display().bold(), existing(default_config_path))
-        }
     }
 }

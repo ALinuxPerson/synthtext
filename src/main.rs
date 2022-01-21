@@ -16,7 +16,7 @@ async fn main() {
         config::paths::initialize()
             .context("failed to initialize config paths")?;
 
-        if !matches!(args.action, SynthTextAction::FindConfigPath) {
+        if !matches!(args.action, SynthTextAction::Config(_)) {
             let config = match args.config {
                 Some(ref config_path) => config::initialize_with_location(config_path)
                     .with_context(|| format!("failed to initialize the config with the specified location '{}'", config_path.display()))?,
@@ -41,17 +41,15 @@ async fn main() {
                 method,
             } => app::text_completion(prompt, max_tokens, temperature, top_k, top_p, method).await,
             SynthTextAction::Config(config) => match config {
-                SynthTextConfig::FindPath => app::config::find_path(),
+                #[allow(clippy::unit_arg)]
+                SynthTextConfig::FindPath => app::config::find_path(args.config).pipe(Ok),
+
                 SynthTextConfig::Generate {
                     path,
                     api_key,
                     engine_definition
                 } => app::config::generate(path, api_key, engine_definition),
             }
-
-            #[allow(clippy::unit_arg)]
-            SynthTextAction::FindConfigPath => app::find_config_path(args.config)
-                .pipe(Ok),
         }
     }
 
