@@ -4,11 +4,11 @@ pub mod config {
     use crate::EngineDefinitionFromStrAdapter;
     use anyhow::Context;
     use owo_colors::OwoColorize;
-    use std::borrow::Cow;
+    
     use std::io::Write;
     use std::path::{Path, PathBuf};
     use std::{env, fs, io};
-    use tap::{Pipe, Tap};
+    use tap::{Tap};
 
     fn existing(path: &Path) -> String {
         if path.exists() {
@@ -162,7 +162,7 @@ use crate::{
 };
 use anyhow::Context;
 use owo_colors::OwoColorize;
-use std::path::{Path, PathBuf};
+
 
 pub async fn log_probabilities(
     context: String,

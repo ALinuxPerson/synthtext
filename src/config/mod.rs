@@ -72,11 +72,13 @@ impl Config {
     }
 }
 
+#[allow(dead_code)]
 pub fn load() -> anyhow::Result<Config> {
     paths::initialize()?;
     Config::load()
 }
 
+#[allow(dead_code)]
 pub fn load_with_location(location: &Path) -> anyhow::Result<Config> {
     paths::initialize()?;
     Config::load_with_location(location)

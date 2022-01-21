@@ -5,7 +5,7 @@ use std::path::PathBuf;
 use std::str::FromStr;
 use tap::Pipe;
 use textsynth::prelude::{
-    CustomEngineDefinition, EngineDefinition, NonEmptyString, Stop, TopK, TopP,
+    CustomEngineDefinition, EngineDefinition, NonEmptyString, TopK, TopP,
 };
 
 /// A program which wraps the TextSynth API.

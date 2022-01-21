@@ -1,14 +1,14 @@
 use crate::{TopKFromStrAdapter, TopPFromStrAdapter};
 use anyhow::Context;
-use futures::{Stream, StreamExt};
+use futures::{StreamExt};
 use owo_colors::OwoColorize;
 use std::io::Write;
-use std::ops::DerefMut;
-use std::pin::Pin;
-use std::task::Poll;
-use std::{io, task};
+
+
+
+use std::{io};
 use tap::{Pipe, Tap, TryConv};
-use textsynth::prelude::{MaxTokens, Stop, TextCompletionBuilder, TextCompletionStreamResult};
+use textsynth::prelude::{MaxTokens, Stop, TextCompletionBuilder};
 
 fn common(
     prompt: String,
