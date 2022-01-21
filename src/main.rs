@@ -40,6 +40,14 @@ async fn main() {
                 top_p,
                 method,
             } => app::text_completion(prompt, max_tokens, temperature, top_k, top_p, method).await,
+            SynthTextAction::Config(config) => match config {
+                SynthTextConfig::FindPath => app::config::find_path(),
+                SynthTextConfig::Generate {
+                    path,
+                    api_key,
+                    engine_definition
+                } => app::config::generate(path, api_key, engine_definition),
+            }
 
             #[allow(clippy::unit_arg)]
             SynthTextAction::FindConfigPath => app::find_config_path(args.config)

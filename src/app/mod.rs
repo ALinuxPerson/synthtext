@@ -1,8 +1,20 @@
 mod text_completion;
+pub mod config {
+    use std::path::PathBuf;
+    use crate::EngineDefinitionFromStrAdapter;
+
+    pub fn find_path() -> anyhow::Result<()> {
+        todo!()
+    }
+
+    pub fn generate(path: Option<PathBuf>, api_key: String, engine_definition: Option<EngineDefinitionFromStrAdapter>) -> anyhow::Result<()> {
+        todo!()
+    }
+}
 
 use std::path::{Path, PathBuf};
 use anyhow::Context;
-use crate::{config, NonEmptyStringFromStrAdapter, SynthTextTextCompletionMethod, TopKFromStrAdapter, TopPFromStrAdapter};
+use crate::{NonEmptyStringFromStrAdapter, SynthTextTextCompletionMethod, TopKFromStrAdapter, TopPFromStrAdapter};
 use owo_colors::OwoColorize;
 
 pub async fn log_probabilities(context: String, NonEmptyStringFromStrAdapter(continuation): NonEmptyStringFromStrAdapter) -> anyhow::Result<()> {
@@ -58,7 +70,7 @@ fn existing(path: &Path) -> String {
 }
 
 pub fn find_config_path(config_path_override: Option<PathBuf>) {
-    let default_config_path = config::paths::location();
+    let default_config_path = crate::config::paths::location();
 
     match config_path_override {
         Some(config_path_override) => {
