@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 use std::fs;
 use std::io::Write;
 use std::path::Path;
+use owo_colors::OwoColorize;
 use tap::Pipe;
 use textsynth::prelude::EngineDefinition;
 
@@ -41,12 +42,12 @@ impl Config {
     pub fn load_with_location(location: &Path) -> anyhow::Result<Self> {
         location
             .pipe(fs::read_to_string)
-            .with_context(|| format!("failed to read path '{}'", location.display()))?
+            .with_context(|| format!("failed to read path {}", location.display().bold()))?
             .pipe_ref(|contents| serde_json::from_str(contents))
             .with_context(|| {
                 format!(
-                    "failed to parse contents of path '{}' to json",
-                    location.display()
+                    "failed to parse contents of path {} to json",
+                    location.display().bold()
                 )
             })
     }

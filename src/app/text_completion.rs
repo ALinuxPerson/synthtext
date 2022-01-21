@@ -51,7 +51,8 @@ pub async fn now(
             .try_conv::<Stop>()
             .with_context(|| {
                 format!(
-                    "passed overflowing 'until' argument; expected <= 5 items but got {}",
+                    "passed overflowing {} argument; expected <= 5 items but got {}",
+                    "until".bold(),
                     until.len()
                 )
             })

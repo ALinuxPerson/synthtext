@@ -40,9 +40,9 @@ impl FromStr for TopKFromStrAdapter {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         s.parse::<u16>()
-            .with_context(|| format!("the given string '{s}' wasn't a valid number"))?
+            .with_context(|| format!("the given string {} wasn't a valid number", s.bold()))?
             .pipe(TopK::new)
-            .with_context(|| format!("the number {s} wasn't in the required bound of 0..=1000"))
+            .with_context(|| format!("the number {} wasn't in the required bound of 0..=1000", s.bold()))
             .map(Self)
     }
 }
@@ -55,9 +55,9 @@ impl FromStr for TopPFromStrAdapter {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         s.parse::<f64>()
-            .with_context(|| format!("the given string '{s}' wasn't a valid float"))?
+            .with_context(|| format!("the given string {} wasn't a valid float", s.bold()))?
             .pipe(TopP::new)
-            .with_context(|| format!("the number {s} wasn't in the required bound of 0.0..=1.0"))
+            .with_context(|| format!("the number {} wasn't in the required bound of 0.0..=1.0", s.bold()))
             .map(Self)
     }
 }
