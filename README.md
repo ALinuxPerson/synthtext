@@ -103,6 +103,10 @@ supported engine definitions (at least by [`textsynth`]):
     > [Fairseq GPT 13B] is the largest publically available English model with 13 billion parameters. Its training
     > corpus is less diverse than GPT-J but it has better performance at least on pure English language tasks. *Note:
     > support of this model is still experimental. It may stop working without notice.*
+
+<p align="center">
+    <img src="assets/config-find-path.gif" width="640" height="480" alt="Log probabilities">
+</p>
     
 In order to use these engine definitions, you must find the configuration file and edit it to include the engine 
 definition. To find it, run this command:
