@@ -165,7 +165,11 @@ pub enum SynthTextConfig {
 
     /// Generate a configuration file.
     ///
-    /// If no path was provided, it will be dumped to stdout.
+    /// If no path was provided, it will be set to the default (or overridden by -c/--config) path
+    /// (run `synthtext config find-path` to get it).
+    ///
+    /// As a precaution, if the file exists at the specified path, it will not continue. If this
+    /// behavior is undesirable, pass the -c/--create argument.
     #[clap(visible_alias = "g")]
     Generate {
         /// The path of the configuration file.
@@ -178,6 +182,14 @@ pub enum SynthTextConfig {
         /// The model or engine definition to use.
         #[clap(short, long)]
         engine_definition: Option<EngineDefinitionFromStrAdapter>,
+
+        /// Do not write the configuration to a file. Instead, print it to stdout.
+        #[clap(short, long)]
+        dump: bool,
+
+        /// Force creation of the configuration file to the specified location even if it exists.
+        #[clap(short, long)]
+        create: bool,
     }
 }
 

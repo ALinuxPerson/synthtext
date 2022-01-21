@@ -1,10 +1,12 @@
 mod text_completion;
 pub mod config {
     use std::{fs, io};
+    use std::borrow::Cow;
     use std::io::Write;
     use std::path::{Path, PathBuf};
     use anyhow::Context;
     use owo_colors::OwoColorize;
+    use tap::{Pipe, Tap};
     use crate::config::Config;
     use crate::EngineDefinitionFromStrAdapter;
 
@@ -54,21 +56,34 @@ pub mod config {
         }
     }
 
-    pub fn generate(path: Option<PathBuf>, api_key: String, engine_definition: Option<EngineDefinitionFromStrAdapter>) -> anyhow::Result<()> {
-        let mut writer = match path {
-            Some(path) => {
-                let handle = fs::OpenOptions::new()
-                    .write(true)
-                    .create(true)
-                    .truncate(true)
-                    .open(&path)
-                    .with_context(|| format!("failed to open path {}", path.display().bold()))?;
+    pub fn generate(config_path_override: Option<PathBuf>, path: Option<PathBuf>, api_key: String, engine_definition: Option<EngineDefinitionFromStrAdapter>, dump: bool, create: bool) -> anyhow::Result<()> {
+        let mut writer = if dump {
+            FileOrStdout::Stdout(io::stdout())
+        } else {
+            let path = path
+                .or(config_path_override)
+                .unwrap_or_else(|| crate::config::paths::location().to_path_buf());
 
-                FileOrStdout::File { handle, path }
-            },
-            None => {
-                FileOrStdout::Stdout(io::stdout())
+            if let Some(parent) = path.parent() {
+                if !parent.exists() {
+                    fs::create_dir_all(parent)
+                        .with_context(|| format!("failed to create parent directory {}", parent.display().bold()))?;
+                }
             }
+
+            let mut builder = fs::OpenOptions::new()
+                .tap_mut(|this| { this.write(true); });
+
+            if create {
+                builder.create(true).truncate(true);
+            } else {
+                builder.create_new(true);
+            };
+
+            let handle = builder.open(&path)
+                .with_context(|| format!("failed to open path {}", path.display().bold()))?;
+
+            FileOrStdout::File { handle, path }
         };
         let engine_definition = engine_definition.map(|engine_definition| engine_definition.0);
         let config = Config {

@@ -47,8 +47,10 @@ async fn main() {
                 SynthTextConfig::Generate {
                     path,
                     api_key,
-                    engine_definition
-                } => app::config::generate(path, api_key, engine_definition),
+                    engine_definition,
+                    dump,
+                    create,
+                } => app::config::generate(args.config, path, api_key, engine_definition, dump, create),
             }
         }
     }
