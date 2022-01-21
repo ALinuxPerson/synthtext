@@ -74,9 +74,9 @@ impl FromStr for EngineDefinitionFromStrAdapter {
             .map(|(id, max_tokens)| (id, Some(max_tokens)))
             .unwrap_or((s, None));
         let engine_definition = match (id, max_tokens) {
-            ("gpt6jb", None) => EngineDefinition::GptJ6B,
-            ("boris6b", None) => EngineDefinition::Boris6B,
-            ("fairseqgpt13b", None) => EngineDefinition::FairseqGpt13B,
+            ("gpt6jb" | "gptj_6B", None) => EngineDefinition::GptJ6B,
+            ("boris6b" | "boris_6B", None) => EngineDefinition::Boris6B,
+            ("fairseqgpt13b" | "fairseq_gpt_13B", None) => EngineDefinition::FairseqGpt13B,
             (id, Some(max_tokens)) => {
                 let max_tokens = max_tokens
                     .parse::<usize>()
