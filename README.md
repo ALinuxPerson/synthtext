@@ -1,5 +1,7 @@
-# synthtext
-A (unofficial) program which wraps the [TextSynth API], an API which can generate text from an input.
+<div align="center">
+    <h1><b>SynthText</b></h1>
+    <p>A (unofficial) program which wraps the <a href="https://textsynth.com">TextSynth API</a>, an API which can generate text from an input.</p>
+</div>
 
 # Usage
 
@@ -133,7 +135,7 @@ This project is licensed under the [MIT license].
 
 [MIT License]: LICENSE
 [`textsynth`]: https://crates.io/textsynth
-[TextSynth API]: https://textsynth.com
+[TextSynth API]: 
 [TextSynth]: https://textsynth.com
 [signing up]: https://textsynth.com/signup.html
 [GPT-J]: https://github.com/kingoflolz/mesh-transformer-jax/#gpt-j-6b
