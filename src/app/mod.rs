@@ -7,7 +7,7 @@ pub mod config {
     use std::borrow::Cow;
     use std::io::Write;
     use std::path::{Path, PathBuf};
-    use std::{fs, io};
+    use std::{env, fs, io};
     use tap::{Pipe, Tap};
 
     fn existing(path: &Path) -> String {
@@ -102,9 +102,27 @@ pub mod config {
                 builder.create_new(true);
             };
 
-            let handle = builder
-                .open(&path)
-                .with_context(|| format!("failed to open path {}", path.display().bold()))?;
+            let result = builder
+                .open(&path);
+
+            if let Err(error) = &result {
+                if let io::ErrorKind::AlreadyExists = error.kind() {
+                    let c_create = "-c/--create".bold();
+                    alp::tip!("as a precaution, writing a config file fails if it already exists. if this behavior is undesirable, pass the {c_create} argument in your command.");
+                    let command = env::args()
+                        .map(|argument| if argument == api_key {
+                            "<API KEY REDACTED>".to_string()
+                        } else {
+                            argument
+                        })
+                        .collect::<Vec<_>>()
+                        .join(" ");
+                    alp::tip!("short variant: {}", format_args!("{} -c", command).italic());
+                    alp::tip!("long variant: {}", format_args!("{} --create", command).italic());
+                }
+            }
+
+            let handle = result.with_context(|| format!("failed to open path {}", path.display().bold()))?;
 
             FileOrStdout::File { handle, path }
         };
