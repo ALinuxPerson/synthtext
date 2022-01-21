@@ -3,7 +3,8 @@ use std::str::FromStr;
 use anyhow::Context;
 use clap::Parser;
 use tap::Pipe;
-use textsynth::prelude::{NonEmptyString, Stop, TopK, TopP};
+use textsynth::prelude::{CustomEngineDefinition, EngineDefinition, NonEmptyString, Stop, TopK, TopP};
+use owo_colors::OwoColorize;
 
 /// A program which wraps the TextSynth API.
 #[derive(Debug, Parser)]
@@ -54,6 +55,32 @@ impl FromStr for TopPFromStrAdapter {
             .pipe(TopP::new)
             .with_context(|| format!("the number {s} wasn't in the required bound of 0.0..=1.0"))
             .map(Self)
+    }
+}
+
+#[derive(Debug)]
+pub struct EngineDefinitionFromStrAdapter(pub EngineDefinition);
+
+impl FromStr for EngineDefinitionFromStrAdapter {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let (id, max_tokens) = s.split_once(',')
+            .map(|(id, max_tokens)| (id, Some(max_tokens)))
+            .unwrap_or((s, None));
+        let engine_definition = match (id, max_tokens) {
+            ("gpt6jb", None) => EngineDefinition::GptJ6B,
+            ("boris6b", None) => EngineDefinition::Boris6B,
+            ("fairseqgpt13b", None) => EngineDefinition::FairseqGpt13B,
+            (id, Some(max_tokens)) => {
+                let max_tokens = max_tokens.parse::<usize>()
+                    .context("max tokens must be a valid number")?;
+                EngineDefinition::Custom(CustomEngineDefinition::new(id.to_string(), max_tokens))
+            }
+            (_id, None) => anyhow::bail!("expected delimiter {} to separate id and max tokens", ','.bold())
+        };
+
+        Ok(Self(engine_definition))
     }
 }
 
@@ -110,6 +137,10 @@ pub enum SynthTextAction {
     /// Find the configuration file, regardless of whether it exists or not.
     #[clap(visible_aliases = &["fcp", "f"])]
     FindConfigPath,
+
+    /// Generate or find the current configuration.
+    #[clap(subcommand)]
+    Config(SynthTextConfig),
 }
 
 #[derive(Debug, Parser)]
@@ -127,6 +158,31 @@ pub enum SynthTextTextCompletionMethod {
     /// output is generated.
     #[clap(visible_alias = "s")]
     Stream,
+}
+
+#[derive(Debug, Parser)]
+#[clap(visible_alias = "c")]
+pub enum SynthTextConfig {
+    /// Find the path of the configuration file.
+    #[clap(visible_aliases = &["fp", "f"])]
+    FindPath,
+
+    /// Generate a configuration file.
+    ///
+    /// If no path was provided, it will be dumped to stdout.
+    #[clap(visible_alias = "g")]
+    Generate {
+        /// The path of the configuration file.
+        path: Option<PathBuf>,
+
+        /// The API key used to authenticate into the API.
+        #[clap(short, long)]
+        api_key: String,
+
+        /// The model or engine definition to use.
+        #[clap(short, long)]
+        engine_definition: Option<EngineDefinitionFromStrAdapter>,
+    }
 }
 
 pub fn parse() -> SynthText {
