@@ -3,6 +3,9 @@ A (unofficial) program which wraps the [TextSynth API], an API which can generat
 
 # Usage
 
+*Note: according to the gifs, it seems like the string "synthtext" is printed onto the screen, but it's not. It's likely
+a bug with `asciicast2gif`.*
+
 ## Setup
 
 <p align="center">
