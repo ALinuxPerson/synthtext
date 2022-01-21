@@ -115,7 +115,7 @@ definition. To find it, run this command:
 $ synthtext config find-path
 ```
 
-The key is "engine_definitions". Edit it like so. For example, if you want to set the engine definitions to Boris 6B, 
+The key is `engine_definitions`. Edit it like so. For example, if you want to set the engine definitions to Boris 6B, 
 edit the configuration like this:
 
 ```json
