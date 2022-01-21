@@ -1,6 +1,7 @@
 pub mod paths;
 
 use std::fs;
+use std::io::Write;
 use std::path::Path;
 use anyhow::Context;
 use once_cell::sync::OnceCell;
@@ -11,7 +12,7 @@ use textsynth::prelude::EngineDefinition;
 static CONFIG: OnceCell<Config> = OnceCell::new();
 
 const fn default_engine_definition() -> EngineDefinition {
-    EngineDefinition::GptJ6B
+    Config::DEFAULT_ENGINE_DEFINITION
 }
 
 #[derive(Serialize, Deserialize)]
@@ -23,6 +24,8 @@ pub struct Config {
 }
 
 impl Config {
+    pub const DEFAULT_ENGINE_DEFINITION: EngineDefinition = EngineDefinition::GptJ6B;
+
     pub fn initialize() -> anyhow::Result<&'static Self> {
         CONFIG.get_or_try_init(Self::load)
     }
@@ -44,6 +47,15 @@ impl Config {
 
     pub fn get() -> &'static Self {
         CONFIG.get().expect("config not initialized")
+    }
+
+    pub fn write(&self, mut writer: impl Write) -> anyhow::Result<()> {
+        let contents = serde_json::to_string_pretty(self)
+            .context("failed to serialize config")?;
+        let contents = contents.as_bytes();
+
+        writer.write_all(contents)
+            .context("failed to write config")
     }
 }
 
