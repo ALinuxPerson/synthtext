@@ -83,6 +83,7 @@ pub mod config {
 
             if let Some(parent) = path.parent() {
                 if !parent.exists() {
+                    alp::warn!("parent directory {} does not exist, creating it", parent.display().bold());
                     fs::create_dir_all(parent).with_context(|| {
                         format!(
                             "failed to create parent directory {}",
