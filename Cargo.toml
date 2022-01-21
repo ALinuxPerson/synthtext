@@ -16,7 +16,7 @@ owo-colors = "3.2.0"
 serde = { version = "1.0.133", features = ["derive"] }
 serde_json = "1.0.75"
 tap = "1.0.1"
-textsynth = { git = "https://github.com/ALinuxPerson/textsynth.git", features = ["serde"] }
+textsynth = { git = "https://github.com/ALinuxPerson/textsynth.git", features = ["serde_derives"] }
 tokio = { version = "1.15.0", features = ["rt-multi-thread", "macros"] }
 
 [features]
