@@ -116,4 +116,5 @@ This project is licensed under the [MIT license].
 [GPT-J]: https://github.com/kingoflolz/mesh-transformer-jax/#gpt-j-6b
 [the Pile]: https://pile.eleuther.ai/
 [EleutherAI]: https://www.eleuther.ai/
+[Boris]: https://github.com/coteries/cedille-ai
 [Fairseq GPT 13B]: https://github.com/pytorch/fairseq/tree/main/examples/moe_lm
