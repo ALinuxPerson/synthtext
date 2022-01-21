@@ -63,6 +63,10 @@ There are many other arguments that the `text-completion` subcommand accepts. To
 
 ## Log probabilities
 
+<p align="center">
+    <img src="assets/log-probabilities.gif" width="640" height="480" alt="Log probabilities">
+</p>
+
 I'll admit, most people *probably* don't have a use case for this. Neither do I! However, you can see what the 
 [API Documentation](https://textsynth.com/documentation.html#logprob) thinks about it:
 
