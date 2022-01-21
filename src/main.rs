@@ -5,8 +5,8 @@ mod textsynth;
 
 use anyhow::Context;
 use args::*;
-use std::process;
 use owo_colors::OwoColorize;
+use std::process;
 use tap::Pipe;
 
 #[tokio::main]

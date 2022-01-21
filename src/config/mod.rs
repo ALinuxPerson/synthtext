@@ -2,11 +2,11 @@ pub mod paths;
 
 use anyhow::Context;
 use once_cell::sync::OnceCell;
+use owo_colors::OwoColorize;
 use serde::{Deserialize, Serialize};
-use std::{fs, io};
 use std::io::Write;
 use std::path::Path;
-use owo_colors::OwoColorize;
+use std::{fs, io};
 use tap::Pipe;
 use textsynth::prelude::EngineDefinition;
 
@@ -45,7 +45,10 @@ impl Config {
         if let Err(error) = &result {
             if let io::ErrorKind::NotFound = error.kind() {
                 alp::tip!("generate the configuration file first");
-                alp::tip!("synthtext config generate --api-key {}", "<API KEY>".italic());
+                alp::tip!(
+                    "synthtext config generate --api-key {}",
+                    "<API KEY>".italic()
+                );
             }
         }
 

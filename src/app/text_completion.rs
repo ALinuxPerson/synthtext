@@ -1,12 +1,10 @@
 use crate::{TopKFromStrAdapter, TopPFromStrAdapter};
 use anyhow::Context;
-use futures::{StreamExt};
+use futures::StreamExt;
 use owo_colors::OwoColorize;
 use std::io::Write;
 
-
-
-use std::{io};
+use std::io;
 use tap::{Pipe, Tap, TryConv};
 use textsynth::prelude::{MaxTokens, Stop, TextCompletionBuilder};
 

@@ -4,9 +4,7 @@ use owo_colors::OwoColorize;
 use std::path::PathBuf;
 use std::str::FromStr;
 use tap::Pipe;
-use textsynth::prelude::{
-    CustomEngineDefinition, EngineDefinition, NonEmptyString, TopK, TopP,
-};
+use textsynth::prelude::{CustomEngineDefinition, EngineDefinition, NonEmptyString, TopK, TopP};
 
 /// A program which wraps the TextSynth API.
 #[derive(Debug, Parser)]
@@ -42,7 +40,12 @@ impl FromStr for TopKFromStrAdapter {
         s.parse::<u16>()
             .with_context(|| format!("the given string {} wasn't a valid number", s.bold()))?
             .pipe(TopK::new)
-            .with_context(|| format!("the number {} wasn't in the required bound of 0..=1000", s.bold()))
+            .with_context(|| {
+                format!(
+                    "the number {} wasn't in the required bound of 0..=1000",
+                    s.bold()
+                )
+            })
             .map(Self)
     }
 }
@@ -57,7 +60,12 @@ impl FromStr for TopPFromStrAdapter {
         s.parse::<f64>()
             .with_context(|| format!("the given string {} wasn't a valid float", s.bold()))?
             .pipe(TopP::new)
-            .with_context(|| format!("the number {} wasn't in the required bound of 0.0..=1.0", s.bold()))
+            .with_context(|| {
+                format!(
+                    "the number {} wasn't in the required bound of 0.0..=1.0",
+                    s.bold()
+                )
+            })
             .map(Self)
     }
 }

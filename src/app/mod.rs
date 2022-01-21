@@ -4,11 +4,11 @@ pub mod config {
     use crate::EngineDefinitionFromStrAdapter;
     use anyhow::Context;
     use owo_colors::OwoColorize;
-    
+
     use std::io::Write;
     use std::path::{Path, PathBuf};
     use std::{env, fs, io};
-    use tap::{Tap};
+    use tap::Tap;
 
     fn existing(path: &Path) -> String {
         if path.exists() {
@@ -83,7 +83,10 @@ pub mod config {
 
             if let Some(parent) = path.parent() {
                 if !parent.exists() {
-                    alp::warn!("parent directory {} does not exist, creating it", parent.display().bold());
+                    alp::warn!(
+                        "parent directory {} does not exist, creating it",
+                        parent.display().bold()
+                    );
                     fs::create_dir_all(parent).with_context(|| {
                         format!(
                             "failed to create parent directory {}",
@@ -103,27 +106,32 @@ pub mod config {
                 builder.create_new(true);
             };
 
-            let result = builder
-                .open(&path);
+            let result = builder.open(&path);
 
             if let Err(error) = &result {
                 if let io::ErrorKind::AlreadyExists = error.kind() {
                     let c_create = "-c/--create".bold();
                     alp::tip!("as a precaution, writing a config file fails if it already exists. if this behavior is undesirable, pass the {c_create} argument in your command.");
                     let command = env::args()
-                        .map(|argument| if argument == api_key {
-                            "<API KEY REDACTED>".to_string()
-                        } else {
-                            argument
+                        .map(|argument| {
+                            if argument == api_key {
+                                "<API KEY REDACTED>".to_string()
+                            } else {
+                                argument
+                            }
                         })
                         .collect::<Vec<_>>()
                         .join(" ");
                     alp::tip!("short variant: {}", format_args!("{} -c", command).italic());
-                    alp::tip!("long variant: {}", format_args!("{} --create", command).italic());
+                    alp::tip!(
+                        "long variant: {}",
+                        format_args!("{} --create", command).italic()
+                    );
                 }
             }
 
-            let handle = result.with_context(|| format!("failed to open path {}", path.display().bold()))?;
+            let handle =
+                result.with_context(|| format!("failed to open path {}", path.display().bold()))?;
 
             FileOrStdout::File { handle, path }
         };
@@ -162,7 +170,6 @@ use crate::{
 };
 use anyhow::Context;
 use owo_colors::OwoColorize;
-
 
 pub async fn log_probabilities(
     context: String,
