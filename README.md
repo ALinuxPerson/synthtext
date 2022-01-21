@@ -5,7 +5,9 @@ A (unofficial) program which wraps the [TextSynth API], an API which can generat
 
 ## Setup
 
-<img src="assets/config-generate.gif" width="640" height="480" alt="Configuration generation">
+<p align="center">
+    <img src="assets/config-generate.gif" width="640" height="480" alt="Configuration generation">
+</p>
 
 First things first, you need an API key from [TextSynth]. You can get one by [signing up] on their website. After you've
 verified your email, you'll get your API key (for free!).
