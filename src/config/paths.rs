@@ -1,7 +1,7 @@
-use std::path::{Path, PathBuf};
 use anyhow::Context;
 use directories::ProjectDirs;
 use once_cell::sync::{Lazy, OnceCell};
+use std::path::{Path, PathBuf};
 
 const QUALIFIER: &str = "com";
 const ORGANIZATION: &str = "ALinuxPerson";
@@ -21,7 +21,9 @@ pub fn initialize() -> anyhow::Result<()> {
 }
 
 fn project_dirs() -> &'static ProjectDirs {
-    PROJECT_DIRS.get().expect("project directories not initialized")
+    PROJECT_DIRS
+        .get()
+        .expect("project directories not initialized")
 }
 
 pub fn directory() -> &'static Path {

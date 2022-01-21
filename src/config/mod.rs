@@ -1,11 +1,11 @@
 pub mod paths;
 
-use std::fs;
-use std::io::Write;
-use std::path::Path;
 use anyhow::Context;
 use once_cell::sync::OnceCell;
 use serde::{Deserialize, Serialize};
+use std::fs;
+use std::io::Write;
+use std::path::Path;
 use tap::Pipe;
 use textsynth::prelude::EngineDefinition;
 
@@ -39,10 +39,16 @@ impl Config {
     }
 
     pub fn load_with_location(location: &Path) -> anyhow::Result<Self> {
-        location.pipe(fs::read_to_string)
+        location
+            .pipe(fs::read_to_string)
             .with_context(|| format!("failed to read path '{}'", location.display()))?
             .pipe_ref(|contents| serde_json::from_str(contents))
-            .with_context(|| format!("failed to parse contents of path '{}' to json", location.display()))
+            .with_context(|| {
+                format!(
+                    "failed to parse contents of path '{}' to json",
+                    location.display()
+                )
+            })
     }
 
     pub fn get() -> &'static Self {
@@ -50,12 +56,10 @@ impl Config {
     }
 
     pub fn write(&self, mut writer: impl Write) -> anyhow::Result<()> {
-        let contents = serde_json::to_string_pretty(self)
-            .context("failed to serialize config")?;
+        let contents = serde_json::to_string_pretty(self).context("failed to serialize config")?;
         let contents = contents.as_bytes();
 
-        writer.write_all(contents)
-            .context("failed to write config")
+        writer.write_all(contents).context("failed to write config")
     }
 }
 

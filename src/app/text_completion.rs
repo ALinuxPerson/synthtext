@@ -1,14 +1,14 @@
-use std::ops::DerefMut;
-use std::pin::Pin;
-use std::{io, task};
-use std::io::Write;
-use std::task::Poll;
+use crate::{TopKFromStrAdapter, TopPFromStrAdapter};
 use anyhow::Context;
 use futures::{Stream, StreamExt};
+use owo_colors::OwoColorize;
+use std::io::Write;
+use std::ops::DerefMut;
+use std::pin::Pin;
+use std::task::Poll;
+use std::{io, task};
 use tap::{Pipe, Tap, TryConv};
 use textsynth::prelude::{MaxTokens, Stop, TextCompletionBuilder, TextCompletionStreamResult};
-use crate::{TopKFromStrAdapter, TopPFromStrAdapter};
-use owo_colors::OwoColorize;
 
 fn common(
     prompt: String,
@@ -26,7 +26,8 @@ fn common(
     };
     let top_k = top_k.map(|top_k| top_k.0);
     let top_p = top_p.map(|top_p| top_p.0);
-    engine.text_completion(prompt)
+    engine
+        .text_completion(prompt)
         .tap_mut(|this| this.max_tokens = max_tokens)
         .tap_mut(|this| this.temperature = temperature)
         .tap_mut(|this| this.top_k = top_k)
@@ -45,18 +46,26 @@ pub async fn now(
     let until = if until.is_empty() {
         None
     } else {
-        until.as_slice()
+        until
+            .as_slice()
             .try_conv::<Stop>()
-            .with_context(|| format!("passed overflowing 'until' argument; expected <= 5 items but got {}", until.len()))
+            .with_context(|| {
+                format!(
+                    "passed overflowing 'until' argument; expected <= 5 items but got {}",
+                    until.len()
+                )
+            })
             .map(Some)?
     };
     let builder = common(prompt.clone(), max_tokens, temperature, top_k, top_p)?;
     let text_completion = match until {
-        Some(until) => builder.now_until(until)
+        Some(until) => builder
+            .now_until(until)
             .await
             .context("failed to connect to the textsynth api")?
             .context("failed to generate a text completion now")?,
-        None => builder.now()
+        None => builder
+            .now()
             .await
             .context("failed to connect to the textsynth api")?
             .context("failed to generate a text completion now")?,
@@ -67,7 +76,9 @@ pub async fn now(
 
     if text_completion.truncated_prompt() {
         alp::warn!("prompt was truncated; the prompt was too large compared to the engine definition's maximum context length");
-        alp::tip!("try shortening your prompt to fit in the engine definition's maximum context length");
+        alp::tip!(
+            "try shortening your prompt to fit in the engine definition's maximum context length"
+        );
     }
 
     if let Some(total_tokens) = text_completion.total_tokens() {

@@ -1,10 +1,12 @@
-use std::path::PathBuf;
-use std::str::FromStr;
 use anyhow::Context;
 use clap::Parser;
-use tap::Pipe;
-use textsynth::prelude::{CustomEngineDefinition, EngineDefinition, NonEmptyString, Stop, TopK, TopP};
 use owo_colors::OwoColorize;
+use std::path::PathBuf;
+use std::str::FromStr;
+use tap::Pipe;
+use textsynth::prelude::{
+    CustomEngineDefinition, EngineDefinition, NonEmptyString, Stop, TopK, TopP,
+};
 
 /// A program which wraps the TextSynth API.
 #[derive(Debug, Parser)]
@@ -24,7 +26,9 @@ impl FromStr for NonEmptyStringFromStrAdapter {
     type Err = anyhow::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        NonEmptyString::new(s.into()).context("given string was empty").map(Self)
+        NonEmptyString::new(s.into())
+            .context("given string was empty")
+            .map(Self)
     }
 }
 
@@ -65,7 +69,8 @@ impl FromStr for EngineDefinitionFromStrAdapter {
     type Err = anyhow::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let (id, max_tokens) = s.split_once(',')
+        let (id, max_tokens) = s
+            .split_once(',')
             .map(|(id, max_tokens)| (id, Some(max_tokens)))
             .unwrap_or((s, None));
         let engine_definition = match (id, max_tokens) {
@@ -73,11 +78,15 @@ impl FromStr for EngineDefinitionFromStrAdapter {
             ("boris6b", None) => EngineDefinition::Boris6B,
             ("fairseqgpt13b", None) => EngineDefinition::FairseqGpt13B,
             (id, Some(max_tokens)) => {
-                let max_tokens = max_tokens.parse::<usize>()
+                let max_tokens = max_tokens
+                    .parse::<usize>()
                     .context("max tokens must be a valid number")?;
                 EngineDefinition::Custom(CustomEngineDefinition::new(id.to_string(), max_tokens))
             }
-            (_id, None) => anyhow::bail!("expected delimiter {} to separate id and max tokens", ','.bold())
+            (_id, None) => anyhow::bail!(
+                "expected delimiter {} to separate id and max tokens",
+                ','.bold()
+            ),
         };
 
         Ok(Self(engine_definition))
@@ -190,7 +199,7 @@ pub enum SynthTextConfig {
         /// Force creation of the configuration file to the specified location even if it exists.
         #[clap(short, long)]
         create: bool,
-    }
+    },
 }
 
 pub fn parse() -> SynthText {
