@@ -6,6 +6,7 @@ mod textsynth;
 use anyhow::Context;
 use args::*;
 use std::process;
+use owo_colors::OwoColorize;
 use tap::Pipe;
 
 #[tokio::main]
@@ -20,8 +21,8 @@ async fn main() {
                 Some(ref config_path) => config::initialize_with_location(config_path)
                     .with_context(|| {
                         format!(
-                            "failed to initialize the config with the specified location '{}'",
-                            config_path.display()
+                            "failed to initialize the config with the specified location {}",
+                            config_path.display().bold()
                         )
                     })?,
                 None => config::initialize()
