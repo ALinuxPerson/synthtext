@@ -37,6 +37,10 @@ fed into the API. You must also first choose the method of delivering the text t
 
 ### Now
 
+<p align="center">
+    <img src="assets/text-completion-now.gif" width="640" height="480" alt="Immediate text completion">
+</p>
+
 The first method, **now**, will display the text immediately to you (after the request is completed, of course!).
 
 ```bash
