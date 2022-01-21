@@ -49,6 +49,10 @@ $ synthtext text-completion $prompt now
 
 ### Stream
 
+<p align="center">
+    <img src="assets/text-completion-stream.gif" width="640" height="480" alt="Streaming text completion">
+</p>
+
 The second method, **stream**, will send the text in chunks as they're generated on the fly.
 
 ```bash
