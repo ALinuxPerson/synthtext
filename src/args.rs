@@ -163,7 +163,7 @@ pub enum SynthTextConfig {
     #[clap(visible_aliases = &["fp", "f"])]
     FindPath,
 
-    /// Generate a configuration file.
+    /// Generate and write a configuration file.
     ///
     /// If no path was provided, it will be set to the default (or overridden by -c/--config) path
     /// (run `synthtext config find-path` to get it).
