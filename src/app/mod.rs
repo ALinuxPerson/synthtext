@@ -164,10 +164,7 @@ pub mod config {
     }
 }
 
-use crate::{
-    NonEmptyStringFromStrAdapter, SynthTextTextCompletionMethod, TopKFromStrAdapter,
-    TopPFromStrAdapter,
-};
+use crate::{InfallibleFromStr, NonEmptyStringFromStrAdapter, Prompt, SynthTextTextCompletionMethod, TopKFromStrAdapter, TopPFromStrAdapter};
 use anyhow::Context;
 use owo_colors::OwoColorize;
 
@@ -195,7 +192,7 @@ pub async fn log_probabilities(
 }
 
 pub async fn text_completion(
-    prompt: String,
+    prompt: InfallibleFromStr<Prompt>,
     max_tokens: Option<usize>,
     temperature: Option<f64>,
     top_k: Option<TopKFromStrAdapter>,

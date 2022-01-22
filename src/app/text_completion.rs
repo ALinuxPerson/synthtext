@@ -1,4 +1,4 @@
-use crate::{TopKFromStrAdapter, TopPFromStrAdapter};
+use crate::{InfallibleFromStr, Prompt, TopKFromStrAdapter, TopPFromStrAdapter};
 use anyhow::Context;
 use futures::StreamExt;
 use owo_colors::OwoColorize;
@@ -34,7 +34,7 @@ fn common(
 }
 
 pub async fn now(
-    prompt: String,
+    InfallibleFromStr(prompt): InfallibleFromStr<Prompt>,
     max_tokens: Option<usize>,
     temperature: Option<f64>,
     top_k: Option<TopKFromStrAdapter>,
@@ -56,6 +56,7 @@ pub async fn now(
             })
             .map(Some)?
     };
+    let prompt = prompt.into_string().context("failed to parse prompt into string")?;
     let builder = common(prompt.clone(), max_tokens, temperature, top_k, top_p)?;
     let text_completion = match until {
         Some(until) => builder
@@ -88,12 +89,13 @@ pub async fn now(
 }
 
 pub async fn stream(
-    prompt: String,
+    InfallibleFromStr(prompt): InfallibleFromStr<Prompt>,
     max_tokens: Option<usize>,
     temperature: Option<f64>,
     top_k: Option<TopKFromStrAdapter>,
     top_p: Option<TopPFromStrAdapter>,
 ) -> anyhow::Result<()> {
+    let prompt = prompt.into_string().context("failed to parse prompt into string")?;
     let mut stream = common(prompt.clone(), max_tokens, temperature, top_k, top_p)?
         .stream()
         .await

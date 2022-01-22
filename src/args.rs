@@ -1,3 +1,6 @@
+use std::convert::Infallible;
+use std::io;
+use std::io::Read;
 use anyhow::Context;
 use clap::Parser;
 use owo_colors::OwoColorize;
@@ -101,6 +104,49 @@ impl FromStr for EngineDefinitionFromStrAdapter {
     }
 }
 
+#[derive(Debug)]
+pub struct InfallibleFromStr<T: for<'a> From<&'a str>>(pub T);
+
+impl<T: for<'a> From<&'a str>> FromStr for InfallibleFromStr<T> {
+    type Err = Infallible;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Self(T::from(s)))
+    }
+}
+
+#[derive(Debug)]
+pub enum Prompt {
+    String(String),
+    Stdin,
+}
+
+impl Prompt {
+    pub fn into_string(self) -> anyhow::Result<String> {
+        match self {
+            Self::String(string) => Ok(string),
+            Self::Stdin => {
+                let mut stdin = io::stdin();
+                let mut buffer = String::new();
+
+                stdin.read_to_string(&mut buffer)
+                    .context("failed to read standard input into buffer")?;
+
+                Ok(buffer)
+            }
+        }
+    }
+}
+
+impl From<&str> for Prompt {
+    fn from(prompt: &str) -> Self {
+        match prompt {
+            "-" => Self::Stdin,
+            _ => Self::String(prompt.into()),
+        }
+    }
+}
+
 #[derive(Debug, Parser)]
 pub enum SynthTextAction {
     /// This action returns the logarithm of the probability that a continuation is generated
@@ -119,7 +165,7 @@ pub enum SynthTextAction {
     #[clap(visible_aliases = &["tc", "t"])]
     TextCompletion {
         /// The input text to complete.
-        prompt: String,
+        prompt: InfallibleFromStr<Prompt>,
 
         /// Maximum number of tokens to generate. A token represents typically 4 or 5 characters
         /// for latin scripts.
