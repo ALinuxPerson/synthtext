@@ -135,7 +135,6 @@ This project is licensed under the [MIT license].
 
 [MIT License]: LICENSE
 [`textsynth`]: https://crates.io/textsynth
-[TextSynth API]: 
 [TextSynth]: https://textsynth.com
 [signing up]: https://textsynth.com/signup.html
 [GPT-J]: https://github.com/kingoflolz/mesh-transformer-jax/#gpt-j-6b
