@@ -18,7 +18,13 @@ fn common(
     let engine = crate::textsynth::engine();
     let max_tokens: Option<MaxTokens> = match max_tokens {
         Some(max_tokens) => MaxTokens::new(max_tokens, &engine.definition)
-            .with_context(|| format!("the maximum number of tokens given, {max_tokens}, is not enough to fit in the engine definition (maximum supported for current engine definition is {})", engine.definition.max_tokens()))?
+            .with_context(|| {
+                format!(
+                    "the maximum number of tokens given, {}, is not enough to fit in the engine definition (maximum supported for current engine definition is {})",
+                    max_tokens.bold(),
+                    engine.definition.max_tokens().bold(),
+                )
+            })?
             .pipe(Some),
         None => None,
     };
